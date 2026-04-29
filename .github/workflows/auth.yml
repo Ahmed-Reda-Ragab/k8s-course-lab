@@ -1,0 +1,31 @@
+name: Weather Auth Service CI/CD
+
+on:
+  push:
+    paths:
+      - 'src/auth/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to DockerHub
+        run: docker login -u ${{ secrets.USER }} -p ${{ secrets.PASS }}
+
+      - name: Build Image
+        run: |
+          docker build -t elprogrammer1/weather-app-auth:${{ github.sha }} src/auth
+
+      - name: Push Image
+        run: |
+          docker push elprogrammer1/weather-app-auth:${{ github.sha }}
+
+      - name: Update K8s Deployment
+        run: |
+          sed -i "s|image:.*|image: elprogrammer1/weather-app-auth:${{ github.sha }}|" kubernetes/authentication/deployment.yaml
+
+    #   - name: Deploy
+    #     run: kubectl apply -f kubernetes/authentication/deployment.yaml
