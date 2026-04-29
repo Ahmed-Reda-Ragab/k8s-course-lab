@@ -13,5 +13,5 @@ WORKDIR /app
 COPY --from=builder /go/bin/app .
 RUN chmod +x ./app
 ENTRYPOINT ["./app"]
-LABEL Name=auth Version=2.0.0
+LABEL Name=auth Version=2.0.1
 EXPOSE 8080
